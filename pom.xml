@@ -4,11 +4,141 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>xf-bm-xplat-msg</groupId>
+    <groupId>com.xforceplus.tower</groupId>
     <artifactId>data-convert-sdk</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>tower-sdk-convert</module>
+    </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
+        <maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
+
+        <skipTests>false</skipTests>
+        <!-- Sonar -->
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+        <sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
+        <sonar.language>java</sonar.language>
     </properties>
+    <scm>
+        <connection>scm:git:git@gitlab.developer.xforcecloud.com:xf-bm-xplat-msg/data-convert-sdk.git</connection>
+        <url>git@gitlab.developer.xforcecloud.com:xf-bm-xplat-msg/data-convert-sdk</url>
+        <developerConnection>scm:git:git@gitlab.developer.xforcecloud.com:xf-bm-xplat-msg/data-convert-sdk.git
+        </developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <tagNameFormat>@{project.version}-${maven.build.timestamp}</tagNameFormat>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <username>liwei</username>
+                    <password>liweiwei</password>
+                    <pushChanges>true</pushChanges>
+                    <checkModificationExcludes>
+                        <checkModificationExclude>tower-sdk-convert/pom.xml</checkModificationExclude>
+                    </checkModificationExcludes>
+                    <allowReleasePluginSnapshot>true</allowReleasePluginSnapshot>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.1</version>
+                <configuration>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <argLine>${surefireArgLine}</argLine>
+                    <!-- Skips unit tests if the value of skip.unit.tests property is true -->
+                    <skipTests>${skipTests}</skipTests>
+                    <!-- Excludes integration tests when unit tests are run. -->
+                    <excludes>
+                        <exclude>**/IT*.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.4</version>
+                <executions>
+                    <execution>
+                        <id>jacoco-initialize</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <destFile>${sonar.jacoco.reportPath}</destFile>
+                            <append>true</append>
+                            <propertyName>surefireArgLine</propertyName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources/</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
+
+    <!--    maven 仓库-->
+    <repositories>
+        <repository>
+            <id>nexus</id>
+            <name>Nexus Public Repository</name>
+            <url>http://120.27.140.65:8081/nexus/content/repositories/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>snapshots</id>
+            <url>http://120.27.140.65:8081/nexus/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>releases</id>
+            <url>http://120.27.140.65:8081/nexus/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>thirdparty</id>
+            <url>http://120.27.140.65:8081/nexus/content/repositories/thirdparty/</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>com</id>
+            <url>http://120.27.140.65:8081/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>com</id>
+            <url>http://120.27.140.65:8081/nexus/content/repositories/releases/</url>
+        </repository>
+    </distributionManagement>
 </project>
