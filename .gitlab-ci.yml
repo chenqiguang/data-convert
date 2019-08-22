@@ -3,13 +3,12 @@ image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cibase:0.5.0
 stages:
   - mvn-package
 
-maven-build:
+maven-branches:
   stage: mvn-package
   script:
-    - mvn package -U -DskipTests=false
+    - mvn clean && mvn package -U -DskipTests=false
   only:
-    - develop
-    - release
+    - branches
 
 .auto_devops: &auto_devops |
   http_status_code=`curl -o .auto_devops.sh -s -m 10 --connect-timeout 10 -w %{http_code} "${CHOERODON_URL}/devops/ci?token=${Token}&type=microservice"`
