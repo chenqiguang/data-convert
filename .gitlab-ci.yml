@@ -2,7 +2,7 @@ image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cibase:0.5.0
 
 stages:
   - mvn-package
-  - mvn-sonar
+#  - mvn-sonar
 
 maven-branches:
   stage: mvn-package
@@ -11,13 +11,13 @@ maven-branches:
   only:
     - branches
 
-maven-sonar:
-  stage: mvn-sonar
-  script:
-    - mvn clean && mvn install -U -DskipTests=false
-    - mvn --batch-mode verify sonar:sonar -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.gitlab.project_id=$CI_PROJECT_PATH -Dsonar.gitlab.commit_sha=$CI_COMMIT_SHA -Dsonar.gitlab.ref_name=$CI_COMMIT_REF_NAME -Dsonar.analysis.serviceGroup=$GROUP_NAME -Dsonar.analysis.commitId=$CI_COMMIT_SHA -Dsonar.projectKey=${GROUP_NAME}:${PROJECT_NAME}
-  except:
-    - tags
+#maven-sonar:
+#  stage: mvn-sonar
+#  script:
+#    - mvn clean && mvn install -U -DskipTests=false
+#    - mvn --batch-mode verify sonar:sonar -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.gitlab.project_id=$CI_PROJECT_PATH -Dsonar.gitlab.commit_sha=$CI_COMMIT_SHA -Dsonar.gitlab.ref_name=$CI_COMMIT_REF_NAME -Dsonar.analysis.serviceGroup=$GROUP_NAME -Dsonar.analysis.commitId=$CI_COMMIT_SHA -Dsonar.projectKey=${GROUP_NAME}:${PROJECT_NAME}
+#  except:
+#    - tags
 
 .auto_devops: &auto_devops |
     curl -o .auto_devops.sh \

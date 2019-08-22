@@ -7,7 +7,7 @@
     <groupId>com.xforceplus.tower</groupId>
     <artifactId>data-convert-sdk</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <modules>
         <module>tower-sdk-convert</module>
     </modules>
