@@ -7,6 +7,7 @@ maven-branches:
   stage: mvn-package
   script:
     - mvn clean && mvn package -U -DskipTests=false
+    - maven_sonar
   only:
     - branches
 
