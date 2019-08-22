@@ -190,11 +190,13 @@ public class ExcelConvertUtil {
             throw new ExcelToJsonException("properties can not be empty!");
         }
         for (JsonToExcelProperty property:propertys){
-                String json = property.getJson();
-                Map<String, String> rules = property.getRules();
+            String json = property.getJson();
+            Map<String, String> rules = property.getRules();
 
-                Objects.requireNonNull(json,"data json can not be null!");
-                Objects.requireNonNull(rules,"rules can not be null!");
+            Objects.requireNonNull(rules,"rules can not be null!");
+            if (ObjectUtils.isEmpty(json)){
+                throw new ExcelToJsonException("json can not be null!");
+            }
         }
 
         Objects.requireNonNull(fileName,"fileName can not be null!");
@@ -217,9 +219,11 @@ public class ExcelConvertUtil {
         Integer startSheet = property.getStartSheet();
 
         Objects.requireNonNull(file,"file can not be null!");
-        Objects.requireNonNull(json,"the result json can not be null!");
         Objects.requireNonNull(filename,"fileName can not be null!");
 
+        if (ObjectUtils.isEmpty(json)){
+            throw new ExcelToJsonException("the result json can not be null!");
+        }
         if (!filename.endsWith(ExcelTypeEnum.XLS.getValue()) && !filename.endsWith(ExcelTypeEnum.XLSX.getValue())){
             throw new ExcelToJsonException("excel must endwith .xls or .xlsx!");
         }
