@@ -19,8 +19,8 @@ public class ExcelConvertFactory {
     public ExcelConvertFactory() {
     }
 
-    public static List<String> ExcelToJson(ExcelToJsonProperty property){
-        return ExcelConvertUtil.ExcelToJson(property);
+    public static List<String> excelToJson(ExcelToJsonProperty property){
+        return ExcelConvertUtil.excelToJson(property);
     }
 
     public static void jsonToExcel(List<JsonToExcelProperty> properties,String fileName){

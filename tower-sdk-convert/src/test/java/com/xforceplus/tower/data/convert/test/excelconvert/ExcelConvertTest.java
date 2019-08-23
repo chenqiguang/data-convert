@@ -65,7 +65,7 @@ public class ExcelConvertTest extends BaseUnitTest {
         property.setStartRow(1);
         property.setStartSheet(1);
 
-        ExcelConvertUtil.ExcelToJson(property);
+        ExcelConvertUtil.excelToJson(property);
     }
 
     @Test
@@ -87,7 +87,7 @@ public class ExcelConvertTest extends BaseUnitTest {
 //        property.setStartRow(1);
 //        property.setStartSheet(1);
 
-        List<String> datas = ExcelConvertUtil.ExcelToJson(property);
+        List<String> datas = ExcelConvertUtil.excelToJson(property);
         notEmpty(datas,"convert excel fail!");
         notNull(datas,"convert excel fail!");
     }
@@ -111,7 +111,7 @@ public class ExcelConvertTest extends BaseUnitTest {
         property.setStartRow(2);
 //        property.setStartSheet(1);
         try {
-            List<String> datas = ExcelConvertUtil.ExcelToJson(property);
+            List<String> datas = ExcelConvertUtil.excelToJson(property);
         }catch (Exception e){
             Assert.assertEquals("convert fail ,please check your json and excel header is all right , or check your startRow is right for your excel!",e.getCause().getMessage());
         }

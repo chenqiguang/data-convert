@@ -22,6 +22,8 @@ import java.util.List;
  */
 public class ExcelConvertListener extends AnalysisEventListener {
     private static Logger logger = LoggerFactory.getLogger(ExcelConvertListener.class);
+    private static final String replace_key1 = "${";
+    private static final String replace_key2 = "}";
 
     private List<String> data = Lists.newArrayList();
     private String json;
@@ -33,7 +35,7 @@ public class ExcelConvertListener extends AnalysisEventListener {
             excelHeaders.addAll((ArrayList<String>)object);
         }else {
             String tempJson = replaceJson(json,excelHeaders,object);
-            if (tempJson.contains("${") && tempJson.contains("}")){
+            if (tempJson.contains(replace_key1) && tempJson.contains(replace_key2)){
                 throw new ExcelToJsonException("convert fail ,please check your json and excel header is all right , or check your startRow is right for your excel!");
             }
             data.add(tempJson);

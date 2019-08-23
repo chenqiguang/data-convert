@@ -42,7 +42,7 @@ public class ExcelConvertUtil {
      *
      * @param property excel 转化为 json 的请求参数
      */
-    public static List<String> ExcelToJson(ExcelToJsonProperty property){
+    public static List<String> excelToJson(ExcelToJsonProperty property){
         checkProperties(property);
         MultipartFile file = property.getFile();
         String json = property.getJson();
