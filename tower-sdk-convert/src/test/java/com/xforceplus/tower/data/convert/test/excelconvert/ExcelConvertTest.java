@@ -29,17 +29,22 @@ import static org.springframework.util.Assert.*;
 public class ExcelConvertTest extends BaseUnitTest {
     private static Logger logger = LoggerFactory.getLogger(ExcelConvertUtil.class);
 
-    private File excel = null;
     private MultipartFile multipartFile = null;
+    private MultipartFile multipartFile1 = null;
     @Before
     public void before(){
         Resource resource = new ClassPathResource("excelToJson.xlsx");
+        Resource resource1 = new ClassPathResource("excelToJsonNoData.xlsx");
         try {
-            excel =  resource.getFile();
+            File excel =  resource.getFile();
             FileInputStream fileInputStream = new FileInputStream(excel);
             multipartFile =
                     new MockMultipartFile("file",excel.getName(), ContentType.APPLICATION_OCTET_STREAM.toString(), fileInputStream);
 
+            File excel1 = resource1.getFile();
+            FileInputStream fileInputStream1 = new FileInputStream(excel1);
+            multipartFile1 =
+                    new MockMultipartFile("file1",excel1.getName(), ContentType.APPLICATION_OCTET_STREAM.toString(), fileInputStream1);
         } catch (IOException e) {
             logger.error("get file error :",e);
         }
@@ -115,6 +120,24 @@ public class ExcelConvertTest extends BaseUnitTest {
             Assert.assertEquals("convert fail ,please check your json and excel header is all right , or check your startRow is right for your excel!",e.getCause().getMessage());
         }
     }
+    @Test
+    public void testExcelToJsonNoData(){
+        ExcelToJsonProperty property = new ExcelToJsonProperty();
+        property.setFile(multipartFile1);
+        String json = "{\n" +
+                "\"school\":\n" +
+                " {\n" +
+                "   \"schoolName\":\"${学校}\",\n" +
+                "   \"student\":\n" +
+                "    {\n" +
+                "     \"studentName\":\"${学生姓名}\",\n" +
+                "     \"studentAge\":\"${学生年龄}\"\n" +
+                "    }\n" +
+                " }\n" +
+                "}";
+        property.setJson(json);
 
-
+        String datas = ExcelConvertUtil.excelToJson(property);
+        Assert.assertNull(datas);
+    }
 }

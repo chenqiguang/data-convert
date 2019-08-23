@@ -73,7 +73,9 @@ public class ExcelConvertUtil {
                 List<String> data = excelListener.getData();
                 datas.addAll(data);
             }
-
+            if (ObjectUtils.isEmpty(datas)){
+                throw new ExcelToJsonException("convert result is '[]' ,please check your file or request params is correct!");
+            }
             return JSON.toJSONString(datas);
         }catch (ExcelToJsonException | IOException e){
             logger.error("excelToJson exception",e);
