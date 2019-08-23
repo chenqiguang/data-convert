@@ -31,35 +31,31 @@ public class JsonToExcelTest extends BaseUnitTest {
         property = new JsonToExcelProperty();
         json = "[\n" +
                 "    {\n" +
-                "        \"cellStyleMap\": {\n" +
-                "            \n" +
-                "        },\n" +
-                "        \"schoolName\": \"学校0\",\n" +
-                "        \"studentAge\": 18,\n" +
-                "        \"studentName\": \"姓名0\"\n" +
+                "        \"schoolName\": \"上海大学\",\n" +
+                "        \"studentName\": \"张三\",\n" +
+                "        \"studentAge\": \"18\",\n" +
+                "        \"address\": \"上海\"\n" +
                 "    },\n" +
                 "    {\n" +
-                "        \"cellStyleMap\": {\n" +
-                "            \n" +
-                "        },\n" +
-                "        \"schoolName\": \"学校1\",\n" +
-                "        \"studentAge\": 19,\n" +
-                "        \"studentName\": \"姓名1\"\n" +
+                "        \"schoolName\": \"上海大学\",\n" +
+                "        \"studentName\": \"\",\n" +
+                "        \"studentAge\": \"18\",\n" +
+                "        \"address\": \"\"\n" +
                 "    },\n" +
                 "    {\n" +
-                "        \"cellStyleMap\": {\n" +
-                "            \n" +
-                "        },\n" +
-                "        \"schoolName\": \"学校2\",\n" +
-                "        \"studentAge\": 20,\n" +
-                "        \"studentName\": \"姓名2\"\n" +
-                "    }\n" +
+                "        \"schoolName\": \"上海大学\",\n" +
+                "        \"studentName\": \"张三\",\n" +
+                "        \"studentAge\": \"\",\n" +
+                "        \"address\": null\n" +
+                "    },\n" +
+                "    \n" +
                 "]";;
         property.setJson(json);
 
         rules.put("schoolName","学校");
         rules.put("studentName","学生姓名");
         rules.put("studentAge","学生年龄");
+        rules.put("addre","地址");
         property.setRules(rules);
 
         String sheetName = "师生资源";

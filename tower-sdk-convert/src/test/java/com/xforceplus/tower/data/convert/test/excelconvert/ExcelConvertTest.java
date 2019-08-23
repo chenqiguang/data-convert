@@ -1,14 +1,11 @@
 package com.xforceplus.tower.data.convert.test.excelconvert;
 
-import com.alibaba.excel.EasyExcelFactory;
-import com.alibaba.excel.ExcelWriter;
-import com.alibaba.excel.metadata.*;
-import com.google.common.collect.Lists;
+
 import com.xforceplus.tower.data.convert.test.BaseUnitTest;
 import com.xforceplus.tower.data.convert.util.ExcelConvertUtil;
 import com.xforceplus.tower.data.convert.model.ExcelToJsonProperty;
 import org.apache.http.entity.ContentType;
-import org.apache.poi.ss.usermodel.IndexedColors;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -18,7 +15,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
-
+import java.util.List;
+import static org.springframework.util.Assert.*;
 /**
  * 项目名称: data-convert-sdk
  * 模块名称: com.xforceplus.tower.data.convert.excelconvert
@@ -69,5 +67,55 @@ public class ExcelConvertTest extends BaseUnitTest {
 
         ExcelConvertUtil.ExcelToJson(property);
     }
+
+    @Test
+    public void testExcelToJsonDefualt(){
+        ExcelToJsonProperty property = new ExcelToJsonProperty();
+        property.setFile(multipartFile);
+        String json = "{\n" +
+                "\"school\":\n" +
+                " {\n" +
+                "   \"schoolName\":\"${学校}\",\n" +
+                "   \"student\":\n" +
+                "    {\n" +
+                "     \"studentName\":\"${学生姓名}\",\n" +
+                "     \"studentAge\":\"${学生年龄}\"\n" +
+                "    }\n" +
+                " }\n" +
+                "}";
+        property.setJson(json);
+//        property.setStartRow(1);
+//        property.setStartSheet(1);
+
+        List<String> datas = ExcelConvertUtil.ExcelToJson(property);
+        notEmpty(datas,"convert excel fail!");
+        notNull(datas,"convert excel fail!");
+    }
+
+    @Test
+    public void testExcelToJsonWrongStartRow(){
+        ExcelToJsonProperty property = new ExcelToJsonProperty();
+        property.setFile(multipartFile);
+        String json = "{\n" +
+                "\"school\":\n" +
+                " {\n" +
+                "   \"schoolName\":\"${学校}\",\n" +
+                "   \"student\":\n" +
+                "    {\n" +
+                "     \"studentName\":\"${学生姓名}\",\n" +
+                "     \"studentAge\":\"${学生年龄}\"\n" +
+                "    }\n" +
+                " }\n" +
+                "}";
+        property.setJson(json);
+        property.setStartRow(2);
+//        property.setStartSheet(1);
+        try {
+            List<String> datas = ExcelConvertUtil.ExcelToJson(property);
+        }catch (Exception e){
+            Assert.assertEquals("convert fail ,please check your json and excel header is all right , or check your startRow is right for your excel!",e.getCause().getMessage());
+        }
+    }
+
 
 }

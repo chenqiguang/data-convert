@@ -4,6 +4,7 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.util.ObjectUtils;
 import com.google.common.collect.Lists;
+import com.xforceplus.tower.data.convert.exception.ExcelToJsonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,9 @@ public class ExcelConvertListener extends AnalysisEventListener {
             excelHeaders.addAll((ArrayList<String>)object);
         }else {
             String tempJson = replaceJson(json,excelHeaders,object);
+            if (tempJson.contains("${") && tempJson.contains("}")){
+                throw new ExcelToJsonException("convert fail ,please check your json and excel header is all right , or check your startRow is right for your excel!");
+            }
             data.add(tempJson);
         }
     }
@@ -50,7 +54,7 @@ public class ExcelConvertListener extends AnalysisEventListener {
         ArrayList<String> values = (ArrayList<String>) object;
         for (int i=0;i<excelHeaders.size();i++){
             String key = new StringBuilder().append("${").append(excelHeaders.get(i)).append("}").toString();
-            String value = values.get(i);
+            String value = values.get(i) == null ? "" : values.get(i);
             json = json.replace(key,value);
         }
         return json;

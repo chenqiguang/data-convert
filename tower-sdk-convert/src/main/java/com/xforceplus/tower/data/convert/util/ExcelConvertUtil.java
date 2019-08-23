@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -58,6 +59,9 @@ public class ExcelConvertUtil {
             ExcelReader excelReader = EasyExcelFactory.getReader(inputStream,excelListener);
             List<Sheet> sheets = excelReader.getSheets();
             logger.info("all sheets {}",sheets);
+            if (ObjectUtils.isEmpty(sheets)){
+                throw new ExcelToJsonException("current excel has no sheet,please import a right excel!");
+            }
 
             List<String> datas = Lists.newArrayList();
             for (int i = startSheet-1;i<sheets.size();i++){
@@ -113,7 +117,7 @@ public class ExcelConvertUtil {
                 tableStyle.setTableContentBackGroundColor(IndexedColors.WHITE);
                 sheet.setTableStyle(tableStyle);
 
-                List datas = createTestListObject(json);
+                List datas = createTestListObject(json,rules);
                 writer.write1(datas,sheet);
 
             }
@@ -139,19 +143,24 @@ public class ExcelConvertUtil {
      * 获取要生成excel的数据列表
      * @param json
      */
-    private static List<List<Object>> createTestListObject(String json) {
+    private static List<List<Object>> createTestListObject(String json,Map<String, String> rules) {
         List<Map> maps = JSONObject.parseArray(json, Map.class);
         List<List<Object>> datas = Lists.newArrayList();
-        for (Map map:maps){
-            List<Object> data = Lists.newArrayList();
-            Collection values = map.values();
-            values.stream().forEach(v->{
-                if (!ObjectUtils.isEmpty(v)){
-                    data.add(v);
+        for (Map<String ,String> map:maps){
+            List<String> keys = new ArrayList(map.keySet());
+            List<String> ruleKeys = new ArrayList(rules.keySet());
+
+            List<Object> values = Lists.newArrayList();
+            keys.stream().forEach(k->{
+                if (ruleKeys.contains(k)){
+                    String value = map.get(k);
+                    if (ObjectUtils.isEmpty(value)){
+                        value = "";
+                    }
+                    values.add(value);
                 }
             });
-
-            datas.add(data);
+            datas.add(values);
         }
 
         return datas;
