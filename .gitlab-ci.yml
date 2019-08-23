@@ -17,8 +17,6 @@ maven-build:
   script:
     - update_pom_version
     - maven_sonar
-    - mkdir -p /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
-    - cp callback-consumer-pre/target/app-exec.jar /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/app.jar
 
 docker-build:
   stage: docker-build

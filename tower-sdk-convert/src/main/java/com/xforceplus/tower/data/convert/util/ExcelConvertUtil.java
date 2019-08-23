@@ -111,9 +111,6 @@ public class ExcelConvertUtil {
 
                 TableStyle tableStyle = new TableStyle();
                 tableStyle.setTableContentBackGroundColor(IndexedColors.WHITE);
-                Font font=new Font();
-                font.setFontHeightInPoints((short) 10);
-                tableStyle.setTableContentFont(font);
                 sheet.setTableStyle(tableStyle);
 
                 List datas = createTestListObject(json);
