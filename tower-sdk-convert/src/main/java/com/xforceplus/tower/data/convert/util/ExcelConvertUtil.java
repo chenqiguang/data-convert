@@ -8,6 +8,7 @@ import com.alibaba.excel.metadata.Sheet;
 import com.alibaba.excel.metadata.TableStyle;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.util.ObjectUtils;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.xforceplus.tower.data.convert.exception.ExcelToJsonException;
@@ -42,7 +43,7 @@ public class ExcelConvertUtil {
      *
      * @param property excel 转化为 json 的请求参数
      */
-    public static List<String> excelToJson(ExcelToJsonProperty property){
+    public static String excelToJson(ExcelToJsonProperty property){
         checkProperties(property);
         MultipartFile file = property.getFile();
         String json = property.getJson();
@@ -73,7 +74,7 @@ public class ExcelConvertUtil {
                 datas.addAll(data);
             }
 
-            return datas;
+            return JSON.toJSONString(datas);
         }catch (ExcelToJsonException | IOException e){
             logger.error("excelToJson exception",e);
         } finally {
@@ -119,7 +120,6 @@ public class ExcelConvertUtil {
 
                 List datas = createTestListObject(json,rules);
                 writer.write1(datas,sheet);
-
             }
         }catch (Exception e){
             logger.error("jsonToExcel error :" ,e);

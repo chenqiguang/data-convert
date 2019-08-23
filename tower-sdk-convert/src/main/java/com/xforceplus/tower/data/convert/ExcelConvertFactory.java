@@ -19,7 +19,7 @@ public class ExcelConvertFactory {
     public ExcelConvertFactory() {
     }
 
-    public static List<String> excelToJson(ExcelToJsonProperty property){
+    public static String excelToJson(ExcelToJsonProperty property){
         return ExcelConvertUtil.excelToJson(property);
     }
 
