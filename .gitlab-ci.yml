@@ -6,7 +6,7 @@ stages:
 maven-build:
   stage: mvn-package
   script:
-    - - mvn clean && mvn install -U -DskipTests=false
+    - mvn clean && mvn package -U -DskipTests=false
     - maven_sonar
 
 .auto_devops: &auto_devops |
