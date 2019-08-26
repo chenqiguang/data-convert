@@ -68,10 +68,10 @@ public class JsonToExcelTest extends BaseUnitTest {
         properties.add(property);
         ExcelConvertUtil.jsonToExcel(properties,"jsonToExcel.xlsx");
 
-//        File file = new File("jsonToExcel.xlsx");
-//        if (file.exists()){
-//            file.delete();
-//        }
+        File file = new File("jsonToExcel.xlsx");
+        if (file.exists()){
+            file.delete();
+        }
     }
 
     @Test
