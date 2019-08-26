@@ -146,7 +146,7 @@ public class ExcelConvertUtil {
      * @param json
      */
     private static List<List<Object>> createTestListObject(String json,Map<String, String> rules) {
-        List<Map> maps = JSONObject.parseArray(json, Map.class);
+        List<LinkedHashMap> maps = JSONObject.parseArray(json, LinkedHashMap.class);
         List<List<Object>> datas = Lists.newArrayList();
         for (Map<String ,String> map:maps){
             List<String> keys = new ArrayList(map.keySet());
@@ -173,7 +173,7 @@ public class ExcelConvertUtil {
      * @param rules
      */
     private static List<List<String>> createTestListStringHead(String json, Map<String, String> rules) {
-        List<Map> datas = JSONObject.parseArray(json, Map.class);
+        List<LinkedHashMap> datas = JSONObject.parseArray(json, LinkedHashMap.class);
         Map<String,String> map = datas.get(0);
         List<List<String>> headers = Lists.newArrayList();
         for (String key: map.keySet()){
