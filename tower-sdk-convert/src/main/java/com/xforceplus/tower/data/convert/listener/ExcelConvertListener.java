@@ -34,7 +34,14 @@ public class ExcelConvertListener extends AnalysisEventListener {
         if (ObjectUtils.isEmpty(excelHeaders)){
             excelHeaders.addAll((ArrayList<String>)object);
         }else {
-            String tempJson = replaceJson(json,excelHeaders,object);
+            ArrayList<String> values = (ArrayList<String>) object;
+            if (values.size() < excelHeaders.size()){
+                int size = excelHeaders.size()-values.size();
+                for (int i=0;i<size;i++){
+                    values.add("");
+                }
+            }
+            String tempJson = replaceJson(json,excelHeaders,values);
             if (tempJson.contains(replace_key1) && tempJson.contains(replace_key2)){
                 throw new ExcelToJsonException("convert fail ,please check your json and excel header is all right , or check your startRow is right for your excel!");
             }
@@ -52,8 +59,7 @@ public class ExcelConvertListener extends AnalysisEventListener {
      * @param json
      * @param excelHeaders
      */
-    private String replaceJson(String json, List<String> excelHeaders,Object object) {
-        ArrayList<String> values = (ArrayList<String>) object;
+    private String replaceJson(String json, List<String> excelHeaders,ArrayList<String> values) {
         for (int i=0;i<excelHeaders.size();i++){
             String key = new StringBuilder().append("${").append(excelHeaders.get(i)).append("}").toString();
             String value = values.get(i) == null ? "" : values.get(i);
