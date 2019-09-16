@@ -1,7 +1,9 @@
 package com.xforceplus.tower.data.convert.test.excelconvert;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.xforceplus.tower.data.convert.test.BaseUnitTest;
+import com.xforceplus.tower.data.convert.test.testmodel.UserAddRequest;
 import com.xforceplus.tower.data.convert.util.ExcelConvertUtil;
 import com.xforceplus.tower.data.convert.model.ExcelToJsonProperty;
 import org.apache.http.entity.ContentType;
@@ -139,5 +141,28 @@ public class ExcelConvertTest extends BaseUnitTest {
 
         String datas = ExcelConvertUtil.excelToJson(property);
 //        Assert.assertNull(datas);
+    }
+
+    @Test
+    public void testUser(){
+        MultipartFile usrFile = null;
+        Resource source = new ClassPathResource("company.xlsx");
+        try {
+            File excel =  source.getFile();
+            FileInputStream fileInputStream = new FileInputStream(excel);
+            usrFile =
+                    new MockMultipartFile("file",excel.getName(), ContentType.APPLICATION_OCTET_STREAM.toString(), fileInputStream);
+        }catch (Exception e){
+            logger.error("error",e);
+            return;
+        }
+        ExcelToJsonProperty property = new ExcelToJsonProperty();
+        property.setFile(usrFile);
+        String json = "{\"ceQuota\":\"${增值税电子普通发票限额}\",\"proxyManagerIdCardTimeLong\":\"${代理人身份证长期}\",\"locationAddr\":\"${企业经营详细地址}\",\"locationCity\":\"${企业经营所在市区}\",\"businessStartTime\":\"${营业期限开始时间}\",\"managerLocation\":\"${法人归属地}\",\"managerIdCardTimeLong\":\"${法人身份证长期}\",\"platManagerStatus\":\"${平台管理人身份}\",\"proxyManagerIdCardEndTime\":\"${代理人证件结束时间}\",\"traditionAuthenFlag\":\"${传统认证管理状态}\",\"businessScope\":\"${企业经营范围}\",\"cquota\":\"${增值税普通发票限额}\",\"bankCity\":\"${银行所在市区}\",\"registLocationAddr\":\"${企业注册详细地址}\",\"inspectionServiceFlag\":\"${查验服务状态}\",\"proxyManagerPhone\":\"${代理人联系方式}\",\"registLocationCity\":\"${企业注册城市}\",\"taxpayerQualificationType\":\"${纳税人资质类型}\",\"bankNo\":\"${对公银行账户}\",\"taxNum\":\"${税号}\",\"proxyManagerName\":\"${代理人姓名}\",\"locationArea\":\"${企业经营所在省份}\",\"proxyManagerCardType\":\"${代理人证据类型}\",\"managerIdCardStartTime\":\"${法人证件开始时间}\",\"managerCardType\":\"${法人证件类型}\",\"managerIdCard\":\"${法人身份证}\",\"speedInspectionChannelFlag\":\"${极速查验通道状态}\",\"managerPhone\":\"${法人联系方式}\",\"squota\":\"${增值税专用发票限额}\",\"proxyManagerIdCardStartTime\":\"${代理人证件开始时间}\",\"registLocationArea\":\"${企业注册省份}\",\"bankName\":\"${开户行名称}\",\"juQuota\":\"${增值税普通发票-卷票限额}\",\"businessEndTime\":\"${营业期限结束时间}\",\"managerName\":\"${法人姓名}\",\"bankArea\":\"${银行所在省份}\",\"managerIdCardEndTime\":\"${法人证件结束时间}\",\"proxyManagerIdCard\":\"${代理人身份证}\",\"businessTimeLong\":\"${营业时间长期}\",\"companyName\":\"${企业名称}\",\"bankBranchName\":\"${开户银行支行名称}\"}";
+        property.setJson(json);
+        String datas = ExcelConvertUtil.excelToJson(property);
+
+        List<String> users = JSONObject.parseArray(datas, String.class);
+        logger.info(users.toString());
     }
 }

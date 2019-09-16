@@ -64,13 +64,13 @@ public class ExcelConvertUtil {
                 throw new ExcelToJsonException("current excel has no sheet,please import a right excel!");
             }
 
-            List<String> datas = Lists.newArrayList();
+            List<Map> datas = Lists.newArrayList();
             for (int i = startSheet-1;i<sheets.size();i++){
                 Sheet sheet = sheets.get(i);
                 sheet.setHeadLineMun(startRow-1);
                 excelReader.read(sheet);
 
-                List<String> data = excelListener.getData();
+                List<Map> data = excelListener.getData();
                 datas.addAll(data);
             }
             if (ObjectUtils.isEmpty(datas)){
