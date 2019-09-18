@@ -46,7 +46,7 @@ public class ExcelConvertUtil {
     public static String excelToJson(ExcelToJsonProperty property){
         checkProperties(property);
         MultipartFile file = property.getFile();
-        String json = property.getJson();
+        String json = property.getJson().replaceAll("\\s+","");
         Integer startRow = property.getStartRow();
         Integer startSheet = property.getStartSheet();
 

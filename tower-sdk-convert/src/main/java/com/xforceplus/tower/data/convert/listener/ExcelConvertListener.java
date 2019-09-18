@@ -66,7 +66,7 @@ public class ExcelConvertListener extends AnalysisEventListener {
      */
     private String replaceJson(String json, List<String> excelHeaders,ArrayList<String> values) {
         for (int i=0;i<excelHeaders.size();i++){
-            String key = new StringBuilder().append("${").append(excelHeaders.get(i)).append("}").toString();
+            String key = new StringBuilder().append("${").append(excelHeaders.get(i).trim()).append("}").toString();
             String value = values.get(i) == null ? "" : values.get(i);
             json = json.replace(key,value);
         }
