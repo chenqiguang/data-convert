@@ -89,37 +89,10 @@ public class PdfConvertUtil {
                            COSString previous = (COSString) tokens.get(j - 1);
                            String string = previous.getString();
                            string = string.replaceFirst(strToFind, message);
-                           System.out.println(string);
-                           System.out.println(string.getBytes("GBK"));
+
                            previous.reset();
                            previous.append(string.getBytes("GBK"));
                        }
-                       //Tj and TJ are the two operators that display
-                       //strings in a PDF
-//                       if (op.getOperation().equals("Tj")) {
-//                           //Tj takes one operator and that is the string
-//                           //to display so lets update that operator
-//                           COSString previous = (COSString) tokens.get(j - 1);
-//                           String string = previous.getString();
-//                           string = string.replaceFirst(strToFind, message);
-//                           System.out.println(string);
-//                           System.out.println(string.getBytes("GBK"));
-//                           previous.reset();
-//                           previous.append(string.getBytes("GBK"));
-//                       } else if (op.getOperation().equals("TJ")) {
-//                           COSArray previous = (COSArray) tokens.get(j - 1);
-//                           for (int k = 0; k < previous.size(); k++) {
-//                               Object arrElement = previous.getObject(k);
-//                               if (arrElement instanceof COSString) {
-//                                   COSString cosString = (COSString) arrElement;
-//                                   String string = cosString.getString();
-//                                   string = string.replaceFirst(strToFind, message);
-//                                   cosString.reset();
-//                                   cosString.append(string.getBytes("GBK"));
-//                               }
-//                           }
-//                       }
-
 
                    }
                }
