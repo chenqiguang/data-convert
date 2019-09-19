@@ -3,7 +3,6 @@ package com.xforceplus.tower.data.convert.test.excelconvert;
 
 import com.alibaba.fastjson.JSONObject;
 import com.xforceplus.tower.data.convert.test.BaseUnitTest;
-import com.xforceplus.tower.data.convert.test.testmodel.UserAddRequest;
 import com.xforceplus.tower.data.convert.util.ExcelConvertUtil;
 import com.xforceplus.tower.data.convert.model.ExcelToJsonProperty;
 import org.apache.http.entity.ContentType;
@@ -146,7 +145,7 @@ public class ExcelConvertTest extends BaseUnitTest {
     @Test
     public void testCompany(){
         MultipartFile usrFile = null;
-        Resource source = new ClassPathResource("compony1.xlsx");
+        Resource source = new ClassPathResource("compony1.xls");
         try {
             File excel =  source.getFile();
             FileInputStream fileInputStream = new FileInputStream(excel);
