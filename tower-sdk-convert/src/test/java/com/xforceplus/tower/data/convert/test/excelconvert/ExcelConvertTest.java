@@ -169,7 +169,7 @@ public class ExcelConvertTest extends BaseUnitTest {
     @Test
     public void testUser(){
         MultipartFile usrFile = null;
-        Resource source = new ClassPathResource("导入人员.xlsx");
+        Resource source = new ClassPathResource("人员导入模板(20190919) .xls");
         try {
             File excel =  source.getFile();
             FileInputStream fileInputStream = new FileInputStream(excel);

@@ -47,6 +47,7 @@ public class ExcelConvertListener extends AnalysisEventListener {
             if (tempJson.contains(replace_key1) && tempJson.contains(replace_key2)){
                 logger.info("excelHeaders:{}",excelHeaders);
                 logger.info("jsonTemplate:{}",json);
+                logger.error("errorjson:{}",tempJson);
                 throw new ExcelToJsonException("convert fail ,please check your json and excel header is all right , or check your startRow is right for your excel!");
             }
             Map map = JSON.parseObject(tempJson, Map.class);
