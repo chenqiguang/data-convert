@@ -1,17 +1,15 @@
 package com.xforceplus.tower.data.convert.util;
 
 
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.util.PDFOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.util.List;
@@ -75,25 +73,19 @@ public class PdfConvertUtil {
 
         try {
            doc = PDDocument.load(pdfTemplate);
-           //            PDFTextStripper stripper=new PDFTextStripper("ISO-8859-1");
-            PDPageTree pages = doc.getPages();
-           for (int i = 0; i < pages.getCount(); i++) {
-               PDPage page = pages.get(i);
-
-               InputStream contents = page.getContents();
-//               PDStream contents = page.getContents();
-               PDFStreamParser parser = new PDFStreamParser(contents);
-               parser.parse();
-               List tokens = parser.getTokens();
+           //PDFTextStripper stripper=new PDFTextStripper("ISO-8859-1");
+            List pages = doc.getDocumentCatalog().getAllPages();
+            for( int i=0; i<pages.size(); i++ ) {
+                 PDPage page = (PDPage)pages.get( i );
+                 PDStream contents = page.getContents();
+                 PDFStreamParser parser = new PDFStreamParser(contents.getStream() );
+                 parser.parse();
+                 List tokens = parser.getTokens();
                for (int j = 0; j < tokens.size(); j++) {
                    Object next = tokens.get(j);
                    if (next instanceof PDFOperator) {
                        PDFOperator op = (PDFOperator) next;
-                       //Tj and TJ are the two operators that display
-                       //strings in a PDF
-                       if (op.getOperation().equals("Tj")) {
-                           //Tj takes one operator and that is the string
-                           //to display so lets update that operator
+                       if (op.getOperation()!=null && data.get(op.getOperation())!=null){
                            COSString previous = (COSString) tokens.get(j - 1);
                            String string = previous.getString();
                            string = string.replaceFirst(strToFind, message);
@@ -101,19 +93,34 @@ public class PdfConvertUtil {
                            System.out.println(string.getBytes("GBK"));
                            previous.reset();
                            previous.append(string.getBytes("GBK"));
-                       } else if (op.getOperation().equals("TJ")) {
-                           COSArray previous = (COSArray) tokens.get(j - 1);
-                           for (int k = 0; k < previous.size(); k++) {
-                               Object arrElement = previous.getObject(k);
-                               if (arrElement instanceof COSString) {
-                                   COSString cosString = (COSString) arrElement;
-                                   String string = cosString.getString();
-                                   string = string.replaceFirst(strToFind, message);
-                                   cosString.reset();
-                                   cosString.append(string.getBytes("GBK"));
-                               }
-                           }
                        }
+                       //Tj and TJ are the two operators that display
+                       //strings in a PDF
+//                       if (op.getOperation().equals("Tj")) {
+//                           //Tj takes one operator and that is the string
+//                           //to display so lets update that operator
+//                           COSString previous = (COSString) tokens.get(j - 1);
+//                           String string = previous.getString();
+//                           string = string.replaceFirst(strToFind, message);
+//                           System.out.println(string);
+//                           System.out.println(string.getBytes("GBK"));
+//                           previous.reset();
+//                           previous.append(string.getBytes("GBK"));
+//                       } else if (op.getOperation().equals("TJ")) {
+//                           COSArray previous = (COSArray) tokens.get(j - 1);
+//                           for (int k = 0; k < previous.size(); k++) {
+//                               Object arrElement = previous.getObject(k);
+//                               if (arrElement instanceof COSString) {
+//                                   COSString cosString = (COSString) arrElement;
+//                                   String string = cosString.getString();
+//                                   string = string.replaceFirst(strToFind, message);
+//                                   cosString.reset();
+//                                   cosString.append(string.getBytes("GBK"));
+//                               }
+//                           }
+//                       }
+
+
                    }
                }
                //now that the tokens are updated we will replace the
@@ -132,12 +139,7 @@ public class PdfConvertUtil {
                 try {
                     doc.close();
                 } catch (IOException e) {
-                    logger.error("close doc error",e)
-
-
-
-
-                    ;
+                    logger.error("close doc error",e);
                 }
             }
         }

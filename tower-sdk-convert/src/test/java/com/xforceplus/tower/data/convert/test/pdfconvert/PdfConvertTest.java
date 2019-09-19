@@ -49,7 +49,7 @@ public class PdfConvertTest extends BaseUnitTest {
         map.put("key7","value7");
         map.put("key8","value8");
         map.put("key9","value9");
-        PdfConvertUtil.generatePdf("testPdf.pdf",map,pdfTemplate);
+        PdfConvertUtil.generatePdf1("testPdf.pdf",map,pdfTemplate);
 
     }
 
