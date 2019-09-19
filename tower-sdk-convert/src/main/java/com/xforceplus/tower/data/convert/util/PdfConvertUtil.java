@@ -1,0 +1,147 @@
+package com.xforceplus.tower.data.convert.util;
+
+
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdfparser.PDFStreamParser;
+import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import java.io.*;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 项目名称: data-convert-sdk
+ * 模块名称: com.xforceplus.tower.data.convert.util
+ * 说明:
+ * JDK 版本: JDK1.8
+ *
+ * @author 作者：chenqiguang
+ * 创建日期：2019-09-19
+ */
+public class PdfConvertUtil {
+    private static Logger logger = LoggerFactory.getLogger(PdfConvertUtil.class);
+
+
+    public static void generatePdf(String pdf, Map<String, Object> data, File pdfTemplate) {
+//        PdfReader reader = null;
+//        AcroFields s = null;
+//        PdfStamper ps = null;
+//        ByteArrayOutputStream bos = null;
+//
+//        try {
+//            reader = new PdfReader(pdfTemplate.getPath());
+//            bos = new ByteArrayOutputStream();
+//            ps = new PdfStamper(reader, bos);
+//            s = ps.getAcroFields();
+//            // 遍历data 给pdf表单表格赋值
+//            for (String key : data.keySet()) {
+//                if(data.get(key)!=null) {
+//                    s.setField(key, data.get(key).toString());
+//                }
+//            }
+//
+//            // 如果为false那么生成的PDF文件还能编辑，一定要设为true
+//            ps.setFormFlattening(true);
+//            ps.close();
+//
+//            FileOutputStream fos = new FileOutputStream(pdf);
+//
+//            fos.write(bos.toByteArray());
+//            fos.flush();
+//            fos.close();
+//        } catch (IOException | DocumentException e) {
+//            logger.error("pdf生成：读取文件异常",e);
+//        } finally {
+//            try {
+//                bos.close();
+//                reader.close();
+//            } catch (IOException e) {
+//                logger.error("pdf生成：关闭流异常");
+//                e.printStackTrace();
+//            }
+//        }
+    }
+
+    public static void generatePdf1(String pdf, Map<String, Object> data, File pdfTemplate) {
+        PDDocument doc = null;
+
+        try {
+           doc = PDDocument.load(pdfTemplate);
+           //            PDFTextStripper stripper=new PDFTextStripper("ISO-8859-1");
+            PDPageTree pages = doc.getPages();
+           for (int i = 0; i < pages.getCount(); i++) {
+               PDPage page = pages.get(i);
+
+               InputStream contents = page.getContents();
+//               PDStream contents = page.getContents();
+               PDFStreamParser parser = new PDFStreamParser(contents);
+               parser.parse();
+               List tokens = parser.getTokens();
+               for (int j = 0; j < tokens.size(); j++) {
+                   Object next = tokens.get(j);
+                   if (next instanceof PDFOperator) {
+                       PDFOperator op = (PDFOperator) next;
+                       //Tj and TJ are the two operators that display
+                       //strings in a PDF
+                       if (op.getOperation().equals("Tj")) {
+                           //Tj takes one operator and that is the string
+                           //to display so lets update that operator
+                           COSString previous = (COSString) tokens.get(j - 1);
+                           String string = previous.getString();
+                           string = string.replaceFirst(strToFind, message);
+                           System.out.println(string);
+                           System.out.println(string.getBytes("GBK"));
+                           previous.reset();
+                           previous.append(string.getBytes("GBK"));
+                       } else if (op.getOperation().equals("TJ")) {
+                           COSArray previous = (COSArray) tokens.get(j - 1);
+                           for (int k = 0; k < previous.size(); k++) {
+                               Object arrElement = previous.getObject(k);
+                               if (arrElement instanceof COSString) {
+                                   COSString cosString = (COSString) arrElement;
+                                   String string = cosString.getString();
+                                   string = string.replaceFirst(strToFind, message);
+                                   cosString.reset();
+                                   cosString.append(string.getBytes("GBK"));
+                               }
+                           }
+                       }
+                   }
+               }
+               //now that the tokens are updated we will replace the
+               //page content stream.
+               PDStream updatedStream = new PDStream(doc);
+               OutputStream out = updatedStream.createOutputStream();
+               ContentStreamWriter tokenWriter = new ContentStreamWriter(out);
+               tokenWriter.writeTokens(tokens);
+               page.setContents(updatedStream);
+           }
+           doc.save(pdf);
+        }catch (Exception e){
+
+        } finally {
+            if (doc != null) {
+                try {
+                    doc.close();
+                } catch (IOException e) {
+                    logger.error("close doc error",e)
+
+
+
+
+                    ;
+                }
+            }
+        }
+    }
+
+
+}
