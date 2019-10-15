@@ -11,17 +11,25 @@ import com.alibaba.excel.util.ObjectUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import com.xforceplus.tower.data.convert.client.DataTemplateClient;
 import com.xforceplus.tower.data.convert.exception.ExcelToJsonException;
 import com.xforceplus.tower.data.convert.listener.ExcelConvertListener;
 import com.xforceplus.tower.data.convert.model.ExcelToJsonProperty;
 import com.xforceplus.tower.data.convert.model.JsonToExcelProperty;
+import com.xforceplus.tower.data.convert.model.Response;
+import com.xforceplus.tower.data.convert.model.TemplateEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,7 +46,8 @@ import java.util.stream.Collectors;
 @Component
 public class ExcelConvertUtil {
     private static Logger logger = LoggerFactory.getLogger(ExcelConvertUtil.class);
-
+    @Autowired
+    private DataTemplateClient dataTemplateClient;
     /**
      *
      * @param property excel 转化为 json 的请求参数
@@ -53,30 +62,7 @@ public class ExcelConvertUtil {
         InputStream inputStream = null;
         try {
             inputStream = file.getInputStream();
-
-            ExcelConvertListener excelListener = new ExcelConvertListener();
-            excelListener.setJson(json);
-
-            ExcelReader excelReader = EasyExcelFactory.getReader(inputStream,excelListener);
-            List<Sheet> sheets = excelReader.getSheets();
-            logger.info("all sheets {}",sheets);
-            if (ObjectUtils.isEmpty(sheets)){
-                throw new ExcelToJsonException("current excel has no sheet,please import a right excel!");
-            }
-
-            List<Map> datas = Lists.newArrayList();
-            for (int i = startSheet-1;i<sheets.size();i++){
-                Sheet sheet = sheets.get(i);
-                sheet.setHeadLineMun(startRow-1);
-                excelReader.read(sheet);
-
-                List<Map> data = excelListener.getData();
-                datas.addAll(data);
-            }
-            if (ObjectUtils.isEmpty(datas)){
-                throw new ExcelToJsonException("convert result is '[]' ,please check your file or request params is correct!");
-            }
-            return JSON.toJSONString(datas);
+            return generateInputStreamToJson(inputStream,json,startRow,startSheet);
         }catch (ExcelToJsonException | IOException e){
             logger.error("excelToJson exception",e);
         } finally {
@@ -91,6 +77,54 @@ public class ExcelConvertUtil {
         return null;
     }
 
+    /**
+     * 获取模版进行转换
+     * @param templateCode
+     * @param json
+     * @param startRow
+     * @param startSheet
+     * @return
+     */
+    public  String excelToJson(Long tenantId,String templateCode,String json,Integer startRow,Integer startSheet){
+        startRow = startRow < 1 ? 1 : startRow;
+        startSheet = startSheet < 1 ? 1 : startSheet;
+
+        /**获取模版*/
+        Response<Map> template = dataTemplateClient.queryTemplate(tenantId, templateCode, 1, 1);
+        if (Response.Fail.equals(template.getCode())){
+            throw new RuntimeException("查询不到模版"+templateCode);
+        }
+
+        Map map = template.getResult();
+        if (map==null || map.get("list")==null){
+            throw new RuntimeException("根据"+templateCode+"查询不到数据");
+        }
+
+        List<TemplateEntity> list = (List<TemplateEntity>) map.get("list");
+        TemplateEntity entity = JSON.parseObject( JSON.toJSONString(list.get(0)) , TemplateEntity.class);
+        InputStream inputStream = null;
+        try {
+            URL url = new URL(entity.getTemplate());
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(5 * 1000);
+            inputStream = conn.getInputStream();
+
+            return generateInputStreamToJson(inputStream,json,startRow,startSheet);
+        }catch (Exception e){
+            logger.error("excel to json by templateCode error",e);
+        }finally {
+            if (inputStream!=null){
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    logger.error("excelToJson Io Exception ",e);
+                }
+            }
+        }
+
+        return null;
+    }
 
     /**
      * json 转化为excel
@@ -139,6 +173,40 @@ public class ExcelConvertUtil {
 
         }
 
+    }
+
+    /**
+     * excel 输入流转为json
+     * @param inputStream
+     * @param json
+     * @param startRow
+     * @param startSheet
+     * @return
+     */
+    private static String generateInputStreamToJson(InputStream inputStream,String json,Integer startRow,Integer startSheet){
+        ExcelConvertListener excelListener = new ExcelConvertListener();
+        excelListener.setJson(json);
+
+        ExcelReader excelReader = EasyExcelFactory.getReader(inputStream,excelListener);
+        List<Sheet> sheets = excelReader.getSheets();
+        logger.info("all sheets {}",sheets);
+        if (ObjectUtils.isEmpty(sheets)){
+            throw new ExcelToJsonException("current excel has no sheet,please import a right excel!");
+        }
+
+        List<Map> datas = Lists.newArrayList();
+        for (int i = startSheet-1;i<sheets.size();i++){
+            Sheet sheet = sheets.get(i);
+            sheet.setHeadLineMun(startRow-1);
+            excelReader.read(sheet);
+
+            List<Map> data = excelListener.getData();
+            datas.addAll(data);
+        }
+        if (ObjectUtils.isEmpty(datas)){
+            throw new ExcelToJsonException("convert result is '[]' ,please check your file or request params is correct!");
+        }
+        return JSON.toJSONString(datas);
     }
 
     /**

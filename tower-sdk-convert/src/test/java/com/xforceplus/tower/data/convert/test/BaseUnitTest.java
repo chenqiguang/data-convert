@@ -16,6 +16,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @SpringBootTest(classes = TestConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@ActiveProfiles("test")
+@ActiveProfiles("unittest")
 public abstract class BaseUnitTest {
 }

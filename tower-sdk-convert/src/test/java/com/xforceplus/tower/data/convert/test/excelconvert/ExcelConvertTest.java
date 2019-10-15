@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
@@ -222,6 +223,56 @@ public class ExcelConvertTest extends BaseUnitTest {
 
         List<String> users = JSONObject.parseArray(datas, String.class);
         logger.info(users.toString());
+    }
+    @Autowired
+    private ExcelConvertUtil excelConvertUtil;
+
+    @Test
+    public void testTemplateExcelToJson(){
+        String json = "{" +
+                "    \"ceQuota\":\"${增值税电子普通发票限额}\",\n" +
+                "    \"proxyManagerIdCardTimeLong\":\"${代理人身份证长期}\",\n" +
+                "    \"locationAddr\":\"${企业经营详细地址}\",\n" +
+                "    \"locationCity\":\"${企业经营所在市区}\",\n" +
+                "    \"businessStartTime\":\"${营业期限开始时间}\",\n" +
+                "    \"managerLocation\":\"${法人归属地}\",\n" +
+                "    \"managerIdCardTimeLong\":\"${法人身份证长期}\",\n" +
+                "    \"platManagerStatus\":\"${平台管理人身份}\",\n" +
+                "    \"proxyManagerIdCardEndTime\":\"${代理人证件结束时间}\",\n" +
+                "    \"businessScope\":\"${企业经营范围}\",\n" +
+                "    \"cquota\":\"${增值税普通发票限额}\",\n" +
+                "    \"registLocationAddr\":\"${企业注册详细地址}\",\n" +
+                "    \"proxyManagerPhone\":\"${代理人联系方式}\",\n" +
+                "    \"registLocationCity\":\"${企业注册城市}\",\n" +
+                "    \"taxpayerQualificationType\":\"${纳税人资质类型}\",\n" +
+                "    \"bankNo\":\"${对公银行账户}\",\n" +
+                "    \"taxNum\":\"${税号}\",\n" +
+                "    \"proxyManagerName\":\"${代理人姓名}\",\n" +
+                "    \"locationArea\":\"${企业经营所在省份}\",\n" +
+                "    \"proxyManagerCardType\":\"${代理人证件类型}\",\n" +
+                "    \"managerIdCardStartTime\":\"${法人证件开始时间}\",\n" +
+                "    \"managerCardType\":\"${法人证件类型}\",\n" +
+                "    \"managerIdCard\":\"${法人身份证}\",\n" +
+                "    \"managerPhone\":\"${法人联系方式}\",\n" +
+                "    \"squota\":\"${增值税专用发票限额}\",\n" +
+                "    \"proxyManagerIdCardStartTime\":\"${代理人证件开始时间}\",\n" +
+                "    \"registLocationArea\":\"${企业注册省份}\",\n" +
+                "    \"juQuota\":\"${增值税普通发票-卷票限额}\",\n" +
+                "    \"businessEndTime\":\"${营业期限结束时间}\",\n" +
+                "    \"managerName\":\"${法人姓名}\",\n" +
+                "    \"managerIdCardEndTime\":\"${法人证件结束时间}\",\n" +
+                "    \"proxyManagerIdCard\":\"${代理人身份证}\",\n" +
+                "    \"businessTimeLong\":\"${营业时间长期}\",\n" +
+                "    \"companyName\":\"${企业名称}\",\n" +
+                "    \"bankBranchName\":\"${开户银行支行名称}\"\n" +
+                "}";
+
+        try {
+            String datas = excelConvertUtil.excelToJson(0L, "template-1", json, 1, 1);
+            System.out.println(datas);
+        }catch (Exception e){
+            logger.error("error",e);
+        }
     }
 
 
