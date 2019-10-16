@@ -28,6 +28,9 @@ import java.util.Map;
 public class PdfConvertTest extends BaseUnitTest {
     private static Logger logger = LoggerFactory.getLogger(PdfConvertTest.class);
 
+    @Autowired
+    private PdfConvertUtil pdfConvertUtill;
+
     File pdfTemplate = null;
     FileInputStream inputStream = null;
     Map<String ,String> map = Maps.newHashMap();
@@ -68,4 +71,13 @@ public class PdfConvertTest extends BaseUnitTest {
         }
 
     }
+
+    @Test
+    public void testGeneratePdfTemplate(){
+
+        pdfConvertUtill.generatePdf(0L,"template-2",map,"testTemplateInputStram.pdf");
+
+    }
+
+
 }

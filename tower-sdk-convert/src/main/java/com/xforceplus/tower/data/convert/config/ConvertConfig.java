@@ -1,5 +1,6 @@
 package com.xforceplus.tower.data.convert.config;
 
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,5 +15,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ComponentScan("com.xforceplus.tower")
+@EnableFeignClients({"com.xforceplus.tower"})
 public class ConvertConfig {
 }
