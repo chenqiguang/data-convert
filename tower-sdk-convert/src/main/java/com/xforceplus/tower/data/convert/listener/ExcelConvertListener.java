@@ -4,6 +4,7 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.util.ObjectUtils;
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.common.collect.Lists;
 import com.xforceplus.tower.data.convert.exception.ExcelToJsonException;
 import org.slf4j.Logger;
@@ -12,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 项目名称: data-convert-sdk
@@ -26,6 +29,7 @@ public class ExcelConvertListener extends AnalysisEventListener {
     private static Logger logger = LoggerFactory.getLogger(ExcelConvertListener.class);
     private static final String replace_key1 = "${";
     private static final String replace_key2 = "}";
+    private static final String rgex = "\\$\\{(.*?)}";
 
     private List<Map> data = Lists.newArrayList();
     private String json;
@@ -48,7 +52,7 @@ public class ExcelConvertListener extends AnalysisEventListener {
                 logger.info("excelHeaders:{}",excelHeaders);
                 logger.info("jsonTemplate:{}",json);
                 logger.error("errorjson:{}",tempJson);
-                throw new ExcelToJsonException("convert fail ,please check your json and excel header is all right , or check your startRow is right for your excel!");
+                throw new ExcelToJsonException("convert fail , please check fields "+ JSON.toJSONString(getErrorSub(tempJson,rgex)));
             }
             Map map = JSON.parseObject(tempJson, Map.class);
             data.add(map);
@@ -72,6 +76,25 @@ public class ExcelConvertListener extends AnalysisEventListener {
             json = json.replace(key,value);
         }
         return json;
+    }
+
+    /**
+     * 截取转换失败的字段
+     * @param json
+     * @param rgex
+     * @return
+     */
+    private List<String> getErrorSub(String json,String rgex){
+        Pattern pattern = Pattern.compile(rgex);
+        Matcher matcher = pattern.matcher(json);
+
+        List<String> list = Lists.newArrayList();
+        while (matcher.find()){
+            int i =1;
+            list.add(matcher.group(i));
+            i++;
+        }
+        return list;
     }
 
     public List<Map> getData() {
